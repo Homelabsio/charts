@@ -1,0 +1,24 @@
+apiVersion: v2
+name: mirrored-registry
+description: A Helm chart for Kubernetes providing pull-through caches for several of the larger public registries
+type: application
+
+# This is the chart version. This version number should be incremented each time you make changes
+# to the chart and its templates, including the app version.
+# Versions are expected to follow Semantic Versioning (https://semver.org/)
+version: 0.1.0
+
+# This is the version number of the application being deployed. This version number should be
+# incremented each time you make changes to the application. Versions are not expected to
+# follow Semantic Versioning. They should reflect the version the application is using.
+# It is recommended to use it with quotes.
+appVersion: "2.8.1"
+
+home: https://github.com/homelabsio/charts
+icon: https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Nginx_logo.svg/500px-Nginx_logo.svg.png
+keywords:
+  - registry
+  - docker
+  - cache
+sources:
+  - https://github.com/homelabsio/charts/mirrored-registry
