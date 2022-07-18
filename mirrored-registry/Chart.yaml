@@ -15,7 +15,7 @@ version: 0.1.0
 appVersion: "2.8.1"
 
 home: https://github.com/homelabsio/charts
-icon: https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Nginx_logo.svg/500px-Nginx_logo.svg.png
+icon: https://raw.githubusercontent.com/Homelabsio/charts/main/mirrored-registry/icon.png
 keywords:
   - registry
   - docker
