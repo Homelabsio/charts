@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 
 
-registres:
+registries:
   - name: docker-io
     enabled: true
     replicaCount: 1
@@ -11,55 +11,31 @@ registres:
       enabled: false
     image:
       tag: ""
-    env:
-      - name: REGISTRY_HTTP_ADDR
-        value: ":5000"
-      - name: REGISTRY_PROXY_REMOTEURL
-        value: "https://registry-1.docker.io"
-      - name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY
-        value: "/var/lib/registry"
+    upstreamURL: "https://registry-1.docker.io"
   - name: k8s-gcr-io
-    enabled: true
+    enabled: false
     replicaCount: 1
     autoscaling:
       enabled: false
     image:
       tag: ""
-    env:
-      - name: REGISTRY_HTTP_ADDR
-        value: ":5000"
-      - name: REGISTRY_PROXY_REMOTEURL
-        value: "https://k8s.gcr.io"
-      - name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY
-        value: "/var/lib/registry"
+    upstreamURL: "https://k8s.gcr.io"
   - name: gcr-io
-    enabled: true
+    enabled: false
     replicaCount: 1
     autoscaling:
       enabled: false
     image:
       tag: ""
-    env:
-      - name: REGISTRY_HTTP_ADDR
-        value: ":5000"
-      - name: REGISTRY_PROXY_REMOTEURL
-        value: "https://gcr.io"
-      - name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY
-        value: "/var/lib/registry"
+    upstreamURL: "https://gcr.io"
   - name: ghcr-io
-    enabled: true
+    enabled: false
     replicaCount: 1
     autoscaling:
       enabled: false
     image:
       tag: ""
-    env:
-      - name: REGISTRY_HTTP_ADDR
-        value: ":5000"
-      - name: REGISTRY_PROXY_REMOTEURL
-        value: "https://ghcr.io"
-      - name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY
-        value: "/var/lib/registry"
+    upstreamURL: "https://ghcr.io"
   - name: quay-io
     enabled: true
     replicaCount: 1
@@ -67,16 +43,7 @@ registres:
       enabled: false
     image:
       tag: "2.5"
-    env:
-      - name: REGISTRY_HTTP_ADDR
-        value: ":5000"
-      - name: REGISTRY_PROXY_REMOTEURL
-        value: "https://quay.io"
-      - name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY
-        value: "/var/lib/registry"
-
-
-
+    upstreamURL: "https://quay.io"
 
 replicaCount: 1
 
@@ -92,7 +59,7 @@ fullnameOverride: ""
 
 serviceAccount:
   # Specifies whether a service account should be created
-  create: true
+  create: false
   # Annotations to add to the service account
   annotations: {}
   # The name of the service account to use.

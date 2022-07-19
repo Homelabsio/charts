@@ -1,0 +1,57 @@
+{{- $dot := . }}
+{{- $ns := .Release.Namespace }}
+{{- range .Values.registries }}
+{{- if .enabled }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  # name: {{ include "mirrored-registry.fullname" $dot }}-{{ .name }}
+  name: {{ include "mirrored-registry.name" $dot }}-{{ .name }}
+  namespace: {{ $ns }}
+  labels:
+    {{- include "mirrored-registry.labels" $dot | nindent 4 }}
+spec:
+  serviceName: {{ include "mirrored-registry.name" $dot }}-{{ .name }}
+  replicas: {{ .replicaCount }}
+  selector:
+    matchLabels:
+      app: mirrored-registry
+      registry: {{ .name }}
+  template:
+    metadata:
+      labels:
+        app: mirrored-registry
+        registry: {{ .name }}
+    spec:
+      containers:
+      - name: oci-registry
+        image: "registry:{{ .image.tag | default $dot.Chart.AppVersion }}"
+        env:
+          - name: REGISTRY_HTTP_ADDR
+            value: ":5000"
+          - name: REGISTRY_HTTP_SECRET
+            value: {{ randAscii 32 | b64enc }}
+          - name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY
+            value: "/var/lib/registry"
+          - name: REGISTRY_PROXY_REMOTEURL
+            value: {{ .upstreamURL }}
+        ports:
+        - name: http
+          containerPort: 5000
+        volumeMounts:
+        - mountPath: "/var/lib/registy"
+          name: {{ include "mirrored-registry.name" $dot }}-{{ .name }}-vol
+  volumeClaimTemplates:
+  - metadata:
+      name: {{ include "mirrored-registry.name" $dot }}-{{ .name }}-vol
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Gi
+      storageClassName: local-path
+
+{{- end }}
+{{- end }}
