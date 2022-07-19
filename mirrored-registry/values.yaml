@@ -2,13 +2,18 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+autoscaling:
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
 
 registries:
   - name: docker-io
     enabled: true
     replicaCount: 1
     autoscaling:
-      enabled: false
+      enabled: true
     image:
       tag: ""
     upstreamURL: "https://registry-1.docker.io"
@@ -37,15 +42,13 @@ registries:
       tag: ""
     upstreamURL: "https://ghcr.io"
   - name: quay-io
-    enabled: true
+    enabled: false
     replicaCount: 1
     autoscaling:
       enabled: false
     image:
       tag: "2.5"
     upstreamURL: "https://quay.io"
-
-replicaCount: 1
 
 image:
   repository: nginx
@@ -111,12 +114,6 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
 
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
 
 nodeSelector: {}
 

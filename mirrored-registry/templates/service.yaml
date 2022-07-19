@@ -1,0 +1,24 @@
+{{- $dot := . }}
+{{- $ns := .Release.Namespace }}
+{{- range .Values.registries }}
+{{- if .enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "mirrored-registry.name" $dot }}-{{ .name }}
+  namespace: {{ $ns }}
+  labels:
+    app: mirrored-registry
+    registry: {{ .name }}
+    {{- include "mirrored-registry.labels" $dot | nindent 4 }}
+spec:
+  selector:
+    app: mirrored-registry
+    registry: {{ .name }}
+  ports:
+  - name: http
+    port: 5000
+    targetPort: 5000
+{{- end }}
+{{- end }}

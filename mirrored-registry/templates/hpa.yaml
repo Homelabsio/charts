@@ -1,0 +1,34 @@
+{{- $dot := . }}
+{{- $ns := .Release.Namespace }}
+{{- range .Values.registries }}
+{{- if .autoscaling.enabled }}
+---
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "mirrored-registry.name" $dot }}-{{ .name }}
+  namespace: {{ $ns }}
+  labels:
+    {{- include "mirrored-registry.labels" $dot | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: {{ include "mirrored-registry.name" $dot }}-{{ .name }}
+  minReplicas: {{ $dot.Values.autoscaling.minReplicas }}
+  maxReplicas: {{ $dot.Values.autoscaling.maxReplicas }}
+  metrics:
+    {{- if $dot.Values.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ $dot.Values.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if $dot.Values.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ $dot.Values.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}
+{{- end }}

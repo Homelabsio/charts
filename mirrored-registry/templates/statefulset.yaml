@@ -13,7 +13,9 @@ metadata:
     {{- include "mirrored-registry.labels" $dot | nindent 4 }}
 spec:
   serviceName: {{ include "mirrored-registry.name" $dot }}-{{ .name }}
+  {{- if not .autoscaling.enabled }}
   replicas: {{ .replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
       app: mirrored-registry
