@@ -1,5 +1,4 @@
 {{- $dot := . }}
-{{- $ns := .Release.Namespace }}
 {{- range .Values.registries }}
 {{- if .enabled }}
 ---
@@ -8,7 +7,7 @@ kind: StatefulSet
 metadata:
   # name: {{ include "mirrored-registry.fullname" $dot }}-{{ .name }}
   name: {{ include "mirrored-registry.name" $dot }}-{{ .name }}
-  namespace: {{ $ns }}
+  namespace: {{ $dot.Release.Namespace }}
   labels:
     {{- include "mirrored-registry.labels" $dot | nindent 4 }}
 spec:
@@ -46,7 +45,7 @@ spec:
         - ReadWriteOnce
       resources:
         requests:
-          storage: 10Gi
+          storage: {{ .storage.size | default "5Gi" }}
       storageClassName: local-path
 
 {{- end }}

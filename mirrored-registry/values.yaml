@@ -8,22 +8,35 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+
 registries:
   - name: docker-io
     enabled: true
-    replicaCount: 1
+    replicaCount: 3
     autoscaling:
       enabled: true
     image:
       tag: ""
+    storage:
+      size: 7Gi
     upstreamURL: "https://registry-1.docker.io"
   - name: k8s-gcr-io
     enabled: false
-    replicaCount: 1
+    replicaCount: 2
     autoscaling:
       enabled: false
     image:
       tag: ""
+    storage:
+      size: 5Gi
     upstreamURL: "https://k8s.gcr.io"
   - name: gcr-io
     enabled: false
@@ -32,6 +45,8 @@ registries:
       enabled: false
     image:
       tag: ""
+    storage:
+      size: 5Gi
     upstreamURL: "https://gcr.io"
   - name: ghcr-io
     enabled: false
@@ -40,6 +55,8 @@ registries:
       enabled: false
     image:
       tag: ""
+    storage:
+      size: 5Gi
     upstreamURL: "https://ghcr.io"
   - name: quay-io
     enabled: false
@@ -48,6 +65,8 @@ registries:
       enabled: false
     image:
       tag: "2.5"
+    storage:
+      size: "5Gi"
     upstreamURL: "https://quay.io"
 
 image:
@@ -82,10 +101,6 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
-service:
-  type: ClusterIP
-  port: 80
-
 ingress:
   enabled: false
   className: ""
@@ -101,19 +116,6 @@ ingress:
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
-
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
-
 
 nodeSelector: {}
 

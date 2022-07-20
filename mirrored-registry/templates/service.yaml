@@ -1,5 +1,4 @@
 {{- $dot := . }}
-{{- $ns := .Release.Namespace }}
 {{- range .Values.registries }}
 {{- if .enabled }}
 ---
@@ -7,7 +6,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "mirrored-registry.name" $dot }}-{{ .name }}
-  namespace: {{ $ns }}
+  namespace: {{ $dot.Release.Namespace }}
   labels:
     app: mirrored-registry
     registry: {{ .name }}

@@ -1,5 +1,4 @@
 {{- $dot := . }}
-{{- $ns := .Release.Namespace }}
 {{- range .Values.registries }}
 {{- if and .enabled .autoscaling.enabled }}
 ---
@@ -7,7 +6,7 @@ apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ include "mirrored-registry.name" $dot }}-{{ .name }}
-  namespace: {{ $ns }}
+  namespace: {{ $dot.Release.Namespace }}
   labels:
     {{- include "mirrored-registry.labels" $dot | nindent 4 }}
 spec:
