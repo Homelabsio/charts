@@ -1,0 +1,19 @@
+{{- $dot := . }}
+{{- $ns := .Release.Namespace }}
+{{- range .Values.registries }}
+{{- if .enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "mirrored-registry.name" $dot }}-{{ .name }}-config
+  namespace: {{ $ns }}
+  labels:
+    {{- include "mirrored-registry.labels" $dot | nindent 4 }}
+data:
+  REGISTRY_HTTP_ADDR: ":5000"
+  REGISTRY_HTTP_SECRET: {{ randAscii 32 | b64enc }}
+  REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: "/var/lib/registry"
+  REGISTRY_PROXY_REMOTEURL: {{ .upstreamURL }}
+{{- end }}
+{{- end }}

@@ -1,7 +1,7 @@
 {{- $dot := . }}
 {{- $ns := .Release.Namespace }}
 {{- range .Values.registries }}
-{{- if .autoscaling.enabled }}
+{{- if and .enabled .autoscaling.enabled }}
 ---
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler

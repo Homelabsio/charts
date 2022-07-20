@@ -29,15 +29,9 @@ spec:
       containers:
       - name: oci-registry
         image: "registry:{{ .image.tag | default $dot.Chart.AppVersion }}"
-        env:
-          - name: REGISTRY_HTTP_ADDR
-            value: ":5000"
-          - name: REGISTRY_HTTP_SECRET
-            value: {{ randAscii 32 | b64enc }}
-          - name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY
-            value: "/var/lib/registry"
-          - name: REGISTRY_PROXY_REMOTEURL
-            value: {{ .upstreamURL }}
+        envFrom:
+          - configMapRef:
+              name: {{ include "mirrored-registry.name" $dot }}-{{ .name }}-config
         ports:
         - name: http
           containerPort: 5000
