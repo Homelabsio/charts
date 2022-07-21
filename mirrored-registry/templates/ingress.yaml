@@ -5,25 +5,28 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingress-registry- # todo: finish
+  name: ingress-{{ include "mirrored-registry.name" $dot }}-{{ .name }}
   namespace: registry
   annotations:
-    kubernetes.io/ingress.class: nginx
+    kubernetes.io/ingress.class: {{ $dot.Values.ingress.className | default "nginx" }}
     nginx.ingress.kubernetes.io/rewrite-target: /
+    {{- if $dot.Values.ingress.certmanager.enabled}}
+    cert-manager.io/{{ $dot.Values.ingress.certmanager.issuerType | default "issuer" }}: {{ $dot.Values.ingress.certmanager.issuerName }}
+    {{- end}}
 spec:
   tls:
     - hosts:
-        - registry- # todo: finish
-      secretName: registry-production-certificate
+        - {{ .name }}.{{ $dot.Values.ingress.baseHostName }}
+      secretName: tls-{{ include "mirrored-registry.name" $dot }}-{{ .name }}
   rules:
-    - host: registry- # todo: finish
+    - host: {{ .name }}.{{ $dot.Values.ingress.baseHostName }}
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: registry- #todo: finish
+                name: {{ include "mirrored-registry.name" $dot }}-{{ .name }}
                 port:
                   number: 5000
 
