@@ -37,7 +37,7 @@ spec:
         resources:
           {{- toYaml $dot.Values.resources.registry | nindent 10 }}
         volumeMounts:
-        - mountPath: "/var/lib/registy"
+        - mountPath: "/var/lib/registry"
           name: {{ include "mirrored-registry.name" $dot }}-{{ .name }}-vol
   volumeClaimTemplates:
   - metadata:

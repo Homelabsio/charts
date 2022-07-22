@@ -2,7 +2,7 @@
 {{- range .Values.registries }}
 {{- if and .enabled .autoscaling.enabled }}
 ---
-apiVersion: autoscaling/v2beta2
+apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ include "mirrored-registry.name" $dot }}-{{ .name }}
