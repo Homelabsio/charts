@@ -38,8 +38,15 @@ ingress:
 
 storage:
   # type: filesystem, s3 [in-cluster minio],
-  type:
-
+  # type: "filesystem"
+  type: "s3"
+  s3:
+    accessKey:
+    secretKey:
+    region:
+    regionEndpoint:
+    bucket:
+    v4Auth:
 registries:
   - name: docker-io
     enabled: true

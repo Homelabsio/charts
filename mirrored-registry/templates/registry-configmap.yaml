@@ -12,7 +12,16 @@ metadata:
 data:
   REGISTRY_HTTP_ADDR: ":5000"
   REGISTRY_HTTP_SECRET: {{ randAscii 32 | b64enc }}
-  REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: "/var/lib/registry"
   REGISTRY_PROXY_REMOTEURL: {{ .upstreamURL }}
+  {{- if eq $dot.Values.storage.type "filesystem" }}
+  REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: "/var/lib/registry"
+  {{- else if eq $dot.Values.storage.type "s3" }}
+  REGISTRY_STORAGE_S3_ACCESSKEY: ""
+  REGISTRY_STORAGE_S3_SECRETKEY: ""
+  REGISTRY_STORAGE_S3_REGION: ""
+  REGISTRY_STORAGE_S3_REGIONENDPOINT: ""
+  REGISTRY_STORAGE_S3_BUCKET: ""
+  REGISTRY_STORAGE_S3_V4AUTH: "true"
+  {{- end }}
 {{- end }}
 {{- end }}
