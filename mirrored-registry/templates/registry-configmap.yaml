@@ -12,7 +12,10 @@ metadata:
 data:
   REGISTRY_HTTP_ADDR: ":5000"
   REGISTRY_HTTP_SECRET: {{ randAscii 32 | b64enc }}
-  REGISTRY_PROXY_REMOTEURL: {{ .upstreamURL }}
+  REGISTRY_PROXY_REMOTEURL: {{ quote .upstreamURL }}
+  {{- if .cache.enabled }}
+  REGISTRY_STORAGE_CACHE_BLOBDESCRIPTOR: "redis"
+  {{- end }}
   {{- if eq $dot.Values.storage.type "filesystem" }}
   REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: "/var/lib/registry"
   {{- else if eq $dot.Values.storage.type "s3" }}

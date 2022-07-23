@@ -47,11 +47,17 @@ storage:
     regionEndpoint:
     bucket:
     v4Auth:
+
+cache:
+  enabled: true
+
 registries:
   - name: docker-io
     enabled: true
     replicaCount: 3
     autoscaling:
+      enabled: true
+    cache:
       enabled: true
     image:
       tag: ""
@@ -63,6 +69,8 @@ registries:
     replicaCount: 2
     autoscaling:
       enabled: false
+    cache:
+      enabled: true
     image:
       tag: ""
     storage:
@@ -73,6 +81,8 @@ registries:
     replicaCount: 1
     autoscaling:
       enabled: false
+    cache:
+      enabled: true
     image:
       tag: ""
     storage:
@@ -83,6 +93,8 @@ registries:
     replicaCount: 1
     autoscaling:
       enabled: false
+    cache:
+      enabled: true
     image:
       tag: ""
     storage:
@@ -93,6 +105,8 @@ registries:
     replicaCount: 1
     autoscaling:
       enabled: false
+    cache:
+      enabled: true
     image:
       tag: "2.5"
     storage:
@@ -100,14 +114,9 @@ registries:
     upstreamURL: "https://quay.io"
 
 image:
-  repository: nginx
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
 
 imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
 
 serviceAccount:
   # Specifies whether a service account should be created

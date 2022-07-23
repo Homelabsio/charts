@@ -1,0 +1,21 @@
+{{- $dot := . }}
+{{- range .Values.registries }}
+{{- if and .enabled .cache.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cache-{{ .name }}
+  namespace: {{ $dot.Release.Namespace }}
+  labels:
+    app: cache
+    registry: {{ .name }}
+    {{- include "mirrored-registry.labels" $dot | nindent 4 }}
+spec:
+  ports:
+    - port: 6379
+  clusterIP: None
+  selector:
+    app: redis
+{{- end }}
+{{- end }}
