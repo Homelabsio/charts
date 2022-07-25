@@ -28,17 +28,26 @@ spec:
       containers:
       - name: registry
         image: "registry:{{ .image.tag | default $dot.Chart.AppVersion }}"
-        envFrom:
-          - configMapRef:
-              name: {{ include "mirrored-registry.name" $dot }}-{{ .name }}-config
         ports:
         - name: http
           containerPort: 5000
         resources:
           {{- toYaml $dot.Values.resources.registry | nindent 10 }}
         volumeMounts:
+        {{- if eq $dot.Values.storage.type "filesystem" }}
         - mountPath: "/var/lib/registry"
           name: {{ include "mirrored-registry.name" $dot }}-{{ .name }}-vol
+        {{- end }}
+        - mountPath: "/etc/docker/registry/"
+          name: config-map
+      volumes:
+        - name: config-map
+          configMap:
+            name: {{ include "mirrored-registry.name" $dot }}-{{ .name }}-config
+            items:
+              - key: config.yml
+                path: config.yml
+  {{- if eq $dot.Values.storage.type "filesystem" }}
   volumeClaimTemplates:
   - metadata:
       name: {{ include "mirrored-registry.name" $dot }}-{{ .name }}-vol
@@ -49,6 +58,6 @@ spec:
         requests:
           storage: {{ .storage.size | default "5Gi" }}
       storageClassName: local-path
-
+  {{- end }}
 {{- end }}
 {{- end }}

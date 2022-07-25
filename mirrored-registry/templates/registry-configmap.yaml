@@ -10,21 +10,87 @@ metadata:
   labels:
     {{- include "mirrored-registry.labels" $dot | nindent 4 }}
 data:
-  REGISTRY_HTTP_ADDR: ":5000"
-  REGISTRY_HTTP_SECRET: {{ randAscii 32 | b64enc }}
-  REGISTRY_PROXY_REMOTEURL: {{ quote .upstreamURL }}
-  {{- if .cache.enabled }}
-  REGISTRY_STORAGE_CACHE_BLOBDESCRIPTOR: "redis"
-  {{- end }}
-  {{- if eq $dot.Values.storage.type "filesystem" }}
-  REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: "/var/lib/registry"
-  {{- else if eq $dot.Values.storage.type "s3" }}
-  REGISTRY_STORAGE_S3_ACCESSKEY: ""
-  REGISTRY_STORAGE_S3_SECRETKEY: ""
-  REGISTRY_STORAGE_S3_REGION: ""
-  REGISTRY_STORAGE_S3_REGIONENDPOINT: ""
-  REGISTRY_STORAGE_S3_BUCKET: ""
-  REGISTRY_STORAGE_S3_V4AUTH: "true"
-  {{- end }}
+  # REGISTRY_HTTP_ADDR: ":5000"
+  # REGISTRY_HTTP_SECRET: {{ randAscii 32 | b64enc }}
+  # REGISTRY_PROXY_REMOTEURL: {{ quote .upstreamURL }}
+  # {{- if .cache.enabled }}
+  # REGISTRY_STORAGE_CACHE_BLOBDESCRIPTOR: "redis"
+  # REGISTRY_REDIS_ADDR: "cache-{{ .name }}.{{ $dot.Release.Namespace }}"
+  # {{- end }}
+  # {{- if eq $dot.Values.storage.type "filesystem" }}
+  # REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: "/var/lib/registry"
+  # {{- else if eq $dot.Values.storage.type "s3" }}
+  # REGISTRY_STORAGE_S3_ACCESSKEY: {{ quote .name }}
+  # REGISTRY_STORAGE_S3_SECRETKEY: ""
+  # REGISTRY_STORAGE_S3_REGION: {{ $dot.Values.storage.s3.region }}
+  # REGISTRY_STORAGE_S3_REGIONENDPOINT: "s3-minio.registry.svc.cluster.local"
+  # REGISTRY_STORAGE_S3_BUCKET: {{ quote .name }}
+  # REGISTRY_STORAGE_S3_V4AUTH: {{ quote $dot.Values.storage.s3.v4Auth }}
+  # {{- end }}
+  config.yml: |
+    version: 0.1
+    log:
+      level: debug
+      formatter: text
+      fields:
+        service: registry
+        environment: staging
+    storage:
+      {{- if eq $dot.Values.storage.type "filesystem" }}
+      filesystem:
+        rootdirectory: /var/lib/registry
+        maxthreads: 100
+      {{- else if eq $dot.Values.storage.type "s3" }}
+      s3:
+        accesskey: {{ .name }}
+        secretkey: {{ .name }}
+        region: {{ $dot.Values.storage.s3.region }}
+        regionendpoint: http://s3-minio.registry.svc.cluster.local:9000
+        bucket: {{ .name }}
+        v4auth: {{ $dot.Values.storage.s3.v4Auth }}
+      {{- end }}
+      delete:
+        enabled: false
+      redirect:
+        disable: true
+      cache:
+        {{- if .cache.enabled }}
+        blobdescriptor: redis
+        {{- else }}
+        blobdescriptor: inmemory
+        {{- end }}
+      maintenance:
+        uploadpurging:
+          enabled: true
+          age: 168h
+          interval: 24h
+          dryrun: false
+        readonly:
+          enabled: false
+    http:
+      addr: :5000
+      secret: {{ randAscii 32 | b64enc }}
+      relativeurls: false
+      draintimeout: 60s
+      http2:
+        disabled: false
+    {{- if .cache.enabled }}
+    redis:
+      addr: cache-{{ .name }}.{{ $dot.Release.Namespace }}:6379
+    {{- end }}
+    health:
+      storagedriver:
+        enabled: true
+        interval: 10s
+        threshold: 3
+      {{- if .cache.enabled }}
+      tcp:
+        - addr: cache-{{ .name }}.{{ $dot.Release.Namespace }}:6379
+          timeout: 3s
+          interval: 10s
+          threshold: 3
+      {{- end }}
+    proxy:
+      remoteurl: {{ .upstreamURL }}
 {{- end }}
 {{- end }}

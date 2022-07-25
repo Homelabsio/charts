@@ -1,8 +1,12 @@
+{{- $dot := . }}
+{{- range .Values.registries }}
+{{- if and .enabled .cache.enabled }}
+---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: redis-ss
-  namespace: redis
+  namespace: {{ $dot.Release.Namespace }}
 spec:
   serviceName: "redis-service"
   replicas: 1
@@ -69,3 +73,6 @@ spec:
       resources:
         requests:
           storage: 1Gi
+{{- end }}
+{{- end }}
+
